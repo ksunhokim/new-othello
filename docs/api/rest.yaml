@@ -1,0 +1,148 @@
+---
+openapi: 3.0.0
+info:
+  title: new-othello
+  description: 뉴-오델로용 API
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/gorani-reader/new-othello/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://test.sunho.kim/othello/api
+  description: 오델로 테스트 서버
+tags:
+- name: rooms
+  description: 방 관련
+- name: users
+  description: 유저 관련
+- name: login
+  description: 로그인 관련
+paths:
+  /rooms:
+    get:
+      tags:
+      - rooms
+      summary: 방 목록을 가져옵니다.
+      responses:
+        200:
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+  /rooms/{name}:
+    post:
+      tags:
+      - rooms
+      summary: 방을 하나 새로 만듭니다.
+      description: 방장이 반환된 방의 웹소켓에 접속하면 방이 만들어집니다.
+      parameters:
+      - name: name
+        in: path
+        description: 방의 이름입니다.
+        required: true
+        style: SIMPLE
+        explode: false
+        schema:
+          type: string
+      responses:
+        201:
+          description: 성공. 방 id를 반환합니다.
+          content:
+            application/json:
+              schema:
+                type: string
+        400:
+          description: 올바른 형식이 아닙니다.
+        409:
+          description: 사용자가 이미 다른 방에 접속하고 있습니다.
+  /rooms/{id}/ws:
+    get:
+      tags:
+      - rooms
+      summary: 웹소켓 접속용입니다.
+      parameters:
+      - name: id
+        in: path
+        description: 방의 아이디입니다.
+        required: true
+        style: SIMPLE
+        explode: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: 성공
+        404:
+          description: 존재하지 않는 방입니다.
+  /users/me:
+    get:
+      tags:
+      - users
+      summary: 현재 접속중인 사용자의 정보를 가져옵니다.
+      responses:
+        200:
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        403:
+          description: 로그인이 되어있지 않습니다.
+  /login/{provider}:
+    get:
+      tags:
+      - login
+      summary: oauth 로그인 페이지로 리다이렉트합니다.
+      parameters:
+      - name: provider
+        in: path
+        description: oauth 제공자입니다. (naver, discord)
+        required: true
+        style: SIMPLE
+        explode: false
+        schema:
+          type: string
+      responses:
+        301:
+          description: 성공
+        404:
+          description: 존재하지 않는 제공자입니다.
+components:
+  schemas:
+    Room:
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: 끼로는?
+        creator:
+          $ref: '#/components/schemas/User'
+        people:
+          type: number
+        date:
+          type: string
+          format: date-time
+        ingame:
+          type: boolean
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        nick:
+          type: string
+          example: 벨붕
+        profile:
+          type: string
+          example: asdf.jpg
+  extensions: {}
