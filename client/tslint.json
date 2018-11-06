@@ -95,7 +95,8 @@
         true,
         "LF"
      ],
-     "trailing-comma":false
+     "trailing-comma": false,
+     "jsx-no-multiline-js": false
   },
   "linterOptions":{
      "exclude":[

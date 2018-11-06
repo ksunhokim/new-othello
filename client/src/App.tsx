@@ -3,6 +3,7 @@ import "./App.css"
 
 import LeftPane from "./components/LeftPane"
 import RightPane from "./components/RightPane"
+import { SampleProvider } from "./contexts/sample"
 import logo from "./logo.svg"
 
 class App extends React.Component {
@@ -16,8 +17,10 @@ class App extends React.Component {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <LeftPane />
-        <RightPane />
+        <SampleProvider>
+          <LeftPane />
+          <RightPane />
+        </SampleProvider>
       </div>
     )
   }
