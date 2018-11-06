@@ -1,10 +1,11 @@
 lazy_static! {
-    static ref CONFIG: Config = Config::load();
+    pub static ref CONFIG: Config = Config::load();
 }
 
 #[derive(Debug)]
 pub struct Config {
-    database_url: String,
+    pub database_url: String,
+    pub oauth_callback: String,
 }
 
 impl Config {
@@ -14,6 +15,7 @@ impl Config {
 
         Config {
             database_url: get_env_or("DATABASE_URL", "".to_string()),
+            oauth_callback: get_env_or("OAUTH_CALLBACK", "".to_string()),
         }
     }
 }

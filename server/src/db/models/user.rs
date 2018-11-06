@@ -1,4 +1,4 @@
-use ::db::schema::users;
+use db::schema::users;
 
 #[derive(Debug, Identifiable, Queryable, Insertable)]
 pub struct User {
