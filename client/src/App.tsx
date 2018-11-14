@@ -2,6 +2,7 @@ import * as React from "react"
 import "./App.css"
 
 import LeftPane from "./components/LeftPane"
+import LoginPanel from "./components/LoginPanel"
 import RightPane from "./components/RightPane"
 import { SampleProvider } from "./contexts/sample"
 import logo from "./logo.svg"
@@ -17,6 +18,7 @@ class App extends React.Component {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
+        <LoginPanel maxIDLength={12} />
         <SampleProvider>
           <LeftPane />
           <RightPane />
