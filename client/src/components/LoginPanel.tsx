@@ -1,7 +1,9 @@
+import axios from "axios"
 import React, { Component } from "react"
 export default class LoginPanel extends Component<Prop, State> {
   public static defaultProps:Prop = {
     maxIDLength: 12,
+    storangeId: "default",
   }
   public state:State = {
     id: "Default",
@@ -9,7 +11,14 @@ export default class LoginPanel extends Component<Prop, State> {
     hidepw: "",
     blankField: "안뇽",
   }
-  public onFieldChange = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  public constructor(props) {
+    super(props)
+    const df = {...this.state}
+    const savedID = this.getStorage("id", df.id)
+    df.id = savedID
+    this.state = df
+  }
+  public onFieldChange = async (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // ..
     let {name, value} = event.target
     const modify = {...this.state}
@@ -32,8 +41,19 @@ export default class LoginPanel extends Component<Prop, State> {
     }
     this.setState(modify)
   }
-  public onFieldSubmit = () => {
+  public onFieldSubmit = async (event:React.FormEvent) => {
+    event.preventDefault()
     // ?
+    this.setStorage("id", this.state.id)
+    const cfile = await axios.get<string>(
+      "https://cdn.discordapp.com/attachments/152746825806381056/512547987310903296/jam.c", {
+        responseType: "text",
+      })
+    this.setState({
+      ...this.state,
+      id: "53",
+      blankField: cfile.status + "",
+    })
   }
   public render() {
     const {id, pw, blankField} = this.state
@@ -57,9 +77,16 @@ export default class LoginPanel extends Component<Prop, State> {
       </form>
     )
   }
+  private getStorage(key:string, df:string = null) {
+    return localStorage.getItem(`${this.props.storangeId}_${key}`)
+  }
+  private setStorage(key:string, value:string) {
+    localStorage.setItem(`${this.props.storangeId}_${key}`, value)
+  }
 }
 interface Prop {
   maxIDLength:number;
+  storangeId:string;
 }
 interface State {
   id:string;
