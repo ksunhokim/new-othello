@@ -11,6 +11,7 @@ extern crate lazy_static;
 extern crate dotenv;
 extern crate rocket_contrib;
 extern crate oauth2;
+extern crate url;
 
 mod api;
 mod oauth;
@@ -18,16 +19,20 @@ mod db;
 mod config;
 mod util;
 
-use oauth::OauthManager;
-use config::CONFIG;
+use oauth::{OauthManager, discord_client};
+use config::{Config, CONFIG};
 
 fn main() {
     rocket::ignite()
-        .mount("/", api::oauth_routes())
+        .mount("/auth", api::oauth_routes())
         .manage(create_oauth_manager())
         .launch();
 }
 
 fn create_oauth_manager() -> OauthManager {
-    OauthManager::new(&CONFIG.oauth_callback)
+    let mut manager = OauthManager::new(&format!("{}{}",CONFIG.domain,"/auth/authorize"));
+    if let (Some(key), Some(secret)) = (&CONFIG.discord_key, &CONFIG.discord_secret) {
+        manager.add("discord", discord_client(&key, &secret));
+    }
+    manager
 }
