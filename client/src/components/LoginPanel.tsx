@@ -9,23 +9,22 @@ export default class LoginPanel extends Component<Prop, State> {
     hidepw: "",
     blankField: "안뇽",
   }
-  public onFieldChange = (event:ChangeEvent) => {
+  public onFieldChange = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // ..
-    const name = this.getFieldName(event.target)
-    let value = this.getFieldValue(event.target)
+    let {name, value} = event.target
     const modify = {...this.state}
-    switch (Number.parseInt(name)) {
-      case ElementNames.authid:
+    switch (name) {
+      case "authid":
         if (value.length > this.props.maxIDLength) {
           value = value.substr(0, this.props.maxIDLength)
         }
         const matchField = value.match(/[a-z0-9-_]+/i)
         modify.id = (matchField != null) ? matchField[0] : ""
         break
-      case ElementNames.authpw:
+      case "authpw":
         modify.pw = value.replace(/\s+/ig, "")
         break
-      case ElementNames.blankField:
+      case "blankField":
         modify.blankField = value.toUpperCase()
         break
       default: // NaN
@@ -37,36 +36,28 @@ export default class LoginPanel extends Component<Prop, State> {
     // ?
   }
   public render() {
+    const {id, pw, blankField} = this.state
+    const fc = this.onFieldChange
     return (
       <form onSubmit={this.onFieldSubmit}>
-        <p>SayID: {this.state.id}</p>
-        <p>SayPW: {this.state.pw}</p>
+        <p>SayID: {id}</p>
+        <p>SayPW: {pw}</p>
         <div>
           ID:
-          <input type="text" name={s(ElementNames.authid)} value={this.state.id} onChange={this.onFieldChange} />
+          <input type="text" name="authid" value={id} onChange={fc} />
         </div>
         <div>
           PW:
-          <input type="password" name={s(ElementNames.authpw)} value={this.state.pw} onChange={this.onFieldChange} />
+          <input type="password" name="authpw" value={pw} onChange={fc} />
         </div>
         <div>
-          <textarea name={s(ElementNames.blankField)} value={this.state.blankField} onChange={this.onFieldChange} />
+          <textarea name="blankField" value={blankField} onChange={fc} />
         </div>
         <button type="submit">설정</button>
       </form>
     )
   }
-  private getFieldValue(target:HTMLElement) {
-    return target["value"] as string
-  }
-  private getFieldName(target:HTMLElement) {
-    return target["name"] as string
-  }
 }
-function s(i:number) {
-  return i.toString(10)
-}
-type ChangeEvent = React.ChangeEvent<HTMLElement>
 interface Prop {
   maxIDLength:number;
 }
@@ -75,9 +66,4 @@ interface State {
   pw:string;
   blankField:string;
   hidepw:string;
-}
-enum ElementNames {
-  authid,
-  authpw,
-  blankField,
 }
